@@ -1,13 +1,17 @@
 # GoodReads Data Pipeline
 
-<img src="https://github.com/san089/goodreads_etl_pipeline/blob/master/docs/images/goodreads.png" align="centre">
+![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![Spark](https://img.shields.io/badge/Apache%20Spark-E25A1C?logo=apachespark&logoColor=white) ![Airflow](https://img.shields.io/badge/Airflow-017CEE?logo=apacheairflow&logoColor=white) ![AWS](https://img.shields.io/badge/AWS%20S3%20%7C%20EMR%20%7C%20Redshift-232F3E?logo=amazonaws&logoColor=white)
+
+Near-real-time data pipeline that lands GoodReads data in S3, transforms it with Spark on EMR every 10 minutes, and UPSERTs it into a Redshift warehouse, orchestrated by Airflow with built-in data-quality checks. Load-tested at ~68 GB/hour.
+
+<p align="center"><img src="docs/images/goodreads.png" width="420"></p>
 
 ## Architecture 
-![Pipeline Architecture](https://github.com/san089/goodreads_etl_pipeline/blob/master/docs/images/architecture.png)
+![Pipeline Architecture](docs/images/architecture.png)
 
 Pipeline Consists of various modules:
 
- - [GoodReads Python Wrapper](https://github.com/san089/goodreads)
+ - GoodReads Python Wrapper (third-party library: [san089/goodreads](https://github.com/san089/goodreads))
  - ETL Jobs
  - Redshift Warehouse Module
  - Analytics Module 
@@ -39,7 +43,7 @@ Redshift: For Redshift I used 2 Node cluster with Instance Types `dc2.large`
 
 ### Setting Up Airflow
 
-I have written detailed instructions on how to setup Airflow using AWS CloudFormation script. Check out - [Airflow using AWS CloudFormation](https://github.com/san089/Data_Engineering_Projects/blob/master/Airflow_Livy_Setup_CloudFormation.md)
+I have written detailed instructions on how to setup Airflow using AWS CloudFormation script. Check out the external guide - [Airflow using AWS CloudFormation](https://github.com/san089/Data_Engineering_Projects/blob/master/Airflow_Livy_Setup_CloudFormation.md)
 
 **NOTE: This setup uses EC2 instance and a Postgres RDS instance. Make sure to check out charges before running the CloudFormation Stack.** 
 
@@ -47,7 +51,7 @@ Project uses `sshtunnel` to submit spark jobs using a ssh connection from the EC
 
     pip install apache-airflow[sshtunnel]
 
-Finally, copy the dag and plugin folder to EC2 inside airflow home directory. Also, checkout [Airflow Connection](https://github.com/san089/goodreads_etl_pipeline/blob/master/docs/Airflow_Connections.md) for setting up connection to EMR and Redshift from Airflow.
+Finally, copy the dag and plugin folder to EC2 inside airflow home directory. Also, checkout [Airflow Connection](docs/Airflow_Connections.md) for setting up connection to EMR and Redshift from Airflow.
 
 ### Setting up EMR
 Spinning up EMR cluster is pretty straight forward. You can use AWS Guide available [here](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-gs.html).
@@ -74,7 +78,7 @@ Finally, pyspark uses python2 as default setup on EMR. To change to python3, set
 Copy the ETL scripts to EMR and we have our EMR ready to run jobs. 
 
 ### Setting up Redshift
-You can follow the AWS Guide to run a Redshift cluster or alternatively you can use [Redshift_Cluster_IaC.py](https://github.com/san089/Data_Engineering_Projects/blob/master/Redshift_Cluster_IaC.py) Script to create cluster automatically. 
+You can follow the AWS Guide to run a Redshift cluster or alternatively you can use the external [Redshift_Cluster_IaC.py](https://github.com/san089/Data_Engineering_Projects/blob/master/Redshift_Cluster_IaC.py) Script to create cluster automatically. 
 
 
 ## How to run 
@@ -82,16 +86,16 @@ Make sure Airflow webserver and scheduler is running.
 Open the Airflow UI `http://< ec2-instance-ip >:< configured-port >` 
 
 GoodReads Pipeline DAG
-![Pipeline DAG](https://github.com/san089/goodreads_etl_pipeline/blob/master/docs/images/goodreads_dag.PNG)
+![Pipeline DAG](docs/images/goodreads_dag.PNG)
 
 DAG View:
-![DAG View](https://github.com/san089/goodreads_etl_pipeline/blob/master/docs/images/DAG.PNG)
+![DAG View](docs/images/DAG.PNG)
 
 DAG Tree View:
-![DAG Tree](https://github.com/san089/goodreads_etl_pipeline/blob/master/docs/images/DAG_tree_view.PNG)
+![DAG Tree](docs/images/DAG_tree_view.PNG)
 
 DAG Gantt View: 
-![DAG Gantt View](https://github.com/san089/goodreads_etl_pipeline/blob/master/docs/images/DAG_Gantt.PNG)
+![DAG Gantt View](docs/images/DAG_Gantt.PNG)
 
 
 ## Testing the Limits
@@ -100,14 +104,14 @@ The `goodreadsfaker` module in this project generates Fake data which is used to
 To test the pipeline I used `goodreadsfaker` to generate 11.4 GB of data which is to be processed every 10 minutes (including ETL jobs + populating data into warehouse + running analytical queries) by the pipeline which equates to around 68 GB/hour and about 1.6 TB/day.
 
 Source DataSet Count:
-![Source Dataset Count](https://github.com/san089/goodreads_etl_pipeline/blob/master/docs/images/DatasetCount.PNG)
+![Source Dataset Count](docs/images/DatasetCount.PNG)
 
 
 DAG Run Results:
-![GoodReads DAG Run](https://github.com/san089/goodreads_etl_pipeline/blob/master/docs/images/DAG_tree_view.PNG)
+![GoodReads DAG Run](docs/images/DAG_tree_view.PNG)
 
 Data Loaded to Warehouse:
-![GoodReads Warehouse Count](https://github.com/san089/goodreads_etl_pipeline/blob/master/docs/images/WarehouseCount.PNG)
+![GoodReads Warehouse Count](docs/images/WarehouseCount.PNG)
 
 
 
